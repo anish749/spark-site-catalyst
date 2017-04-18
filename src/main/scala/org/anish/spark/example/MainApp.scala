@@ -1,4 +1,4 @@
-package org.anish.spark.testuser
+package org.anish.spark.example
 
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 import org.apache.spark.{SparkConf, SparkContext}
