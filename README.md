@@ -37,10 +37,13 @@ val df: DataFrame = sqlContext
   .format("org.anish.spark.sitecatalyst")
   .load("data/rawExportRZ") // give local or hdfs or s3n path here
 
-
 df.printSchema() // Print schema to see if it was read correctly.
 df.show() // Use the data for further processing.
 
 ```
 A detailed usage of this package is described in the object org.anish.spark.example.MainApp with examples for Spark v2.0.0 and v1.5.2.
 
+For testing the application I've included some data files from Randy Zwitch's blog at http://randyzwitch.com/ and are present the folder 'data/rawExportRZ'.
+Reading the data in R is described in this blog post using the files linked here: http://randyzwitch.com/adobe-analytics-clickstream-raw-data-feed/
+I've developed this application using the same files. Link for downloading the files are available in the blog post.
+Files included courtesy of Randy Zwitch.
