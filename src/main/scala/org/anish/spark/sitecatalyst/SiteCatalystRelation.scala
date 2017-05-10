@@ -1,6 +1,6 @@
 package org.anish.spark.sitecatalyst
 
-import java.io.{BufferedReader, ByteArrayInputStream, File, InputStreamReader}
+import java.io._
 
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.spark.rdd.RDD
@@ -30,6 +30,7 @@ class SiteCatalystRelation(location: String, userSchema: StructType)
   def getPairRdd = sqlContext
     .sparkContext
     .wholeTextFiles(location)
+    .map(identity) // This creates a copy. Data gets cached later. This is needed as it internally uses NewHadoopRDDs
 
   def getRandomLookUpFilePath: String = {
     getPairRdd
@@ -37,11 +38,12 @@ class SiteCatalystRelation(location: String, userSchema: StructType)
       .map(_._1) // Take only names
       .take(1)
       .toList
-      .head
+      .headOption
+      .getOrElse(throw new FileNotFoundException("Look Up Data File not found"))
   }
 
   override def buildScan(): RDD[Row] = {
-    val pairRdd = getPairRdd
+    val pairRdd = getPairRdd.cache
 
     // Reading Site Catalyst export
     // Step 1: Parse the Manifest File
@@ -106,7 +108,7 @@ class SiteCatalystRelation(location: String, userSchema: StructType)
             .load(_))
           .reduce(_.unionAll(_))
       }).reduce(_.unionAll(_))
-      .toJavaRDD
+      .rdd
 
     ret
   }
